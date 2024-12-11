@@ -212,7 +212,8 @@ class ModbusSerialClient(ModbusBaseSyncClient):
         )
         self.socket: serial.Serial | None = None
         self.last_frame_end = None
-        self._t0 = float(1 + bytesize + stopbits) / baudrate
+        paritybit = not str(parity).upper().startswith( 'N' )
+        self._t0 = float(1 + bytesize + paritybit + stopbits) / baudrate
 
         # Check every 4 bytes / 2 registers if the reading is ready
         self._recv_interval = self._t0 * 4
@@ -288,14 +289,14 @@ class ModbusSerialClient(ModbusBaseSyncClient):
         _ = addr
         start = time.time()
         if hasattr(self,"ctx"):
-          timeout = start + self.ctx.comm_params.timeout_connect
+            timeout = start + self.ctx.comm_params.timeout_connect
         else:
             timeout = start + self.comm_params.timeout_connect
         while self.state != ModbusTransactionState.IDLE:
             if self.state == ModbusTransactionState.TRANSACTION_COMPLETE:
                 timestamp = round(time.time(), 6)
                 Log.debug(
-                    "Changing state to IDLE - Last Frame End - {} Current Time stamp - {}",
+                    "+{time.time()-start:5.3f}s Changing state to IDLE - Last Frame End - {} Current Time stamp - {}",
                     self.last_frame_end,
                     timestamp,
                 )
@@ -306,24 +307,27 @@ class ModbusSerialClient(ModbusBaseSyncClient):
                             "Waiting for 3.5 char before next send - {} ms",
                             self.silent_interval * 1000,
                         )
+                        Log.debug("+{time.time()-start:5.3f}s Sleeping in {ModbusTransactionState.to_string(self.state)} frame end silent_interval {self.silent_interval}")
                         time.sleep(self.silent_interval)
                 else:
                     # Recovering from last error ??
+                    Log.debug("+{time.time()-start:5.3f}s Sleeping in {ModbusTransactionState.to_string(self.state)} recovery silent_interval {self.silent_interval}")
                     time.sleep(self.silent_interval)
                 self.state = ModbusTransactionState.IDLE
             elif self.state == ModbusTransactionState.RETRYING:
                 # Simple lets settle down!!!
                 # To check for higher baudrates
+                Log.debug(f"+{time.time()-start:5.3f}s Sleeping in {ModbusTransactionState.to_string(self.state)} timeout_connect {self.comm_params.timeout_connect}")
                 time.sleep(self.comm_params.timeout_connect)
                 break
             elif time.time() > timeout:
                 Log.debug(
-                    "Spent more time than the read time out, "
+                    f"+{time.time()-start:5.3f}s Spent more time in {ModbusTransactionState.to_string(self.state)} than the read time out, "
                     "resetting the transaction to IDLE"
                 )
                 self.state = ModbusTransactionState.IDLE
             else:
-                Log.debug("Sleeping")
+                Log.debug(f"+{time.time()-start:5.3f}s Sleeping in {ModbusTransactionState.to_string(self.state)} final silent_interval {self.silent_interval}")
                 time.sleep(self.silent_interval)
         size = self._send(request)
         self.last_frame_end = round(time.time(), 6)
@@ -345,6 +349,7 @@ class ModbusSerialClient(ModbusBaseSyncClient):
             if available and available != size:
                 more_data = True
                 size = available
+            Log.debug(f"+{time.time()-start:5.3f}s Sleeping in {ModbusTransactionState.to_string(self.state)} wait data _recv_interval {self._recv_interval}")
             time.sleep(self._recv_interval)
         return size
 
@@ -353,8 +358,11 @@ class ModbusSerialClient(ModbusBaseSyncClient):
         if not self.socket:
             raise ConnectionException(str(self))
         if size is None:
+            Log.debug(f"Waiting in {ModbusTransactionState.to_string(self.state)} for UNKNOWN data")            
             size = self._wait_for_data()
-        if size > self._in_waiting():
+        in_waiting = self._in_waiting()
+        if size > in_waiting:
+            Log.debug(f"Waiting in {ModbusTransactionState.to_string(self.state)} for size {size} - {in_waiting} waiting = {size-in_waiting} data")            
             self._wait_for_data()
         result = self.socket.read(size)
         self.last_frame_end = round(time.time(), 6)
