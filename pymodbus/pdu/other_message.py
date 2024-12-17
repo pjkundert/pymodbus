@@ -35,6 +35,7 @@ class ReadExceptionStatusResponse(ModbusPDU):
     """ReadExceptionStatusResponse."""
 
     function_code = 0x07
+    response = True
     rtu_frame_size = 5
 
     def encode(self) -> bytes:
@@ -72,6 +73,7 @@ class GetCommEventCounterResponse(ModbusPDU):
     """GetCommEventCounterRequest."""
 
     function_code = 0x0B
+    response = True
     rtu_frame_size = 8
 
     def encode(self) -> bytes:
@@ -112,6 +114,7 @@ class GetCommEventLogResponse(ModbusPDU):
     """GetCommEventLogRequest."""
 
     function_code = 0x0C
+    response = True
     rtu_byte_count_pos = 2
 
     def __init__(self, status: bool = True, message_count: int = 0, event_count: int = 0, events: list[int] | None = None, dev_id: int = 1, transaction_id: int = 0) -> None:
@@ -178,6 +181,7 @@ class ReportSlaveIdResponse(ModbusPDU):
     """ReportSlaveIdRequeste."""
 
     function_code = 0x11
+    response = True
     rtu_byte_count_pos = 2
 
     def __init__(self, identifier: bytes = b"\x00", status: bool = True, dev_id: int = 1, transaction_id: int = 0) -> None:

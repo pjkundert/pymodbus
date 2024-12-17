@@ -47,6 +47,7 @@ class ReadHoldingRegistersResponse(ModbusPDU):
     """ReadHoldingRegistersResponse."""
 
     function_code = 3
+    response = True
     rtu_byte_count_pos = 2
 
     def encode(self) -> bytes:
@@ -75,6 +76,7 @@ class ReadInputRegistersResponse(ReadHoldingRegistersResponse):
     """ReadInputRegistersResponse."""
 
     function_code = 4
+    response = True
 
 
 class ReadWriteMultipleRegistersRequest(ModbusPDU):
@@ -165,12 +167,14 @@ class ReadWriteMultipleRegistersResponse(ReadHoldingRegistersResponse):
     """ReadWriteMultipleRegistersResponse."""
 
     function_code = 23
+    response = True
 
 
 class WriteSingleRegisterResponse(ModbusPDU):
     """WriteSingleRegisterResponse."""
 
     function_code = 6
+    response = True
     rtu_frame_size = 8
 
     def encode(self) -> bytes:
@@ -185,6 +189,8 @@ class WriteSingleRegisterResponse(ModbusPDU):
 
 class WriteSingleRegisterRequest(WriteSingleRegisterResponse):
     """WriteSingleRegisterRequest."""
+
+    response = False
 
     async def update_datastore(self, context: ModbusSlaveContext) -> ModbusPDU:
         """Run a write single register request against a datastore."""
@@ -252,6 +258,7 @@ class WriteMultipleRegistersResponse(ModbusPDU):
     """WriteMultipleRegistersResponse."""
 
     function_code = 16
+    response = True
     rtu_frame_size = 8
 
     def encode(self) -> bytes:
@@ -303,6 +310,7 @@ class MaskWriteRegisterResponse(ModbusPDU):
     """MaskWriteRegisterResponse."""
 
     function_code = 0x16
+    response = True
     rtu_frame_size = 10
 
     def __init__(self, address=0x0000, and_mask=0xFFFF, or_mask=0x0000, dev_id=1, transaction_id=0) -> None:

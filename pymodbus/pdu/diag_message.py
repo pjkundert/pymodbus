@@ -18,6 +18,7 @@ class DiagnosticBase(ModbusPDU):
     """DiagnosticBase."""
 
     function_code = 0x08
+    response = False
     sub_function_code: int = 9999
     rtu_frame_size = 8
 
@@ -75,6 +76,12 @@ class DiagnosticBase(ModbusPDU):
         return response(message=self.message, dev_id=self.dev_id, transaction_id=self.transaction_id)
 
 
+class DiagnosticBaseResponse(DiagnosticBase):
+    """DiagnosticBaseResponse."""
+
+    response = True
+
+
 class ReturnQueryDataRequest(DiagnosticBase):
     """ReturnQueryDataRequest."""
 
@@ -85,6 +92,7 @@ class ReturnQueryDataResponse(DiagnosticBase):
     """ReturnQueryDataResponse."""
 
     sub_function_code = 0x0000
+    response = True
 
 
 class RestartCommunicationsOptionRequest(DiagnosticBase):
@@ -97,6 +105,7 @@ class RestartCommunicationsOptionResponse(DiagnosticBase):
     """RestartCommunicationsOptionResponse."""
 
     sub_function_code = 0x0001
+    response = True
 
 
 class ReturnDiagnosticRegisterRequest(DiagnosticBase):
@@ -114,6 +123,7 @@ class ReturnDiagnosticRegisterResponse(DiagnosticBase):
     """ReturnDiagnosticRegisterResponse."""
 
     sub_function_code = 0x0002
+    response = True
 
 
 class ChangeAsciiInputDelimiterRequest(DiagnosticBase):
@@ -132,6 +142,7 @@ class ChangeAsciiInputDelimiterResponse(DiagnosticBase):
     """ChangeAsciiInputDelimiterResponse."""
 
     sub_function_code = 0x0003
+    response = True
 
 
 class ForceListenOnlyModeRequest(DiagnosticBase):
@@ -152,6 +163,7 @@ class ForceListenOnlyModeResponse(DiagnosticBase):
     """
 
     sub_function_code = 0x0004
+    response = True
 
     def __init__(self, dev_id=1, transaction_id=0):
         """Initialize to block a return response."""
@@ -174,6 +186,7 @@ class ClearCountersResponse(DiagnosticBase):
     """ClearCountersResponse."""
 
     sub_function_code = 0x000A
+    response = True
 
 
 class ReturnBusMessageCountRequest(DiagnosticBase):
@@ -191,6 +204,7 @@ class ReturnBusMessageCountResponse(DiagnosticBase):
     """ReturnBusMessageCountResponse."""
 
     sub_function_code = 0x000B
+    response = True
 
 
 class ReturnBusCommunicationErrorCountRequest(DiagnosticBase):
@@ -208,6 +222,7 @@ class ReturnBusCommunicationErrorCountResponse(DiagnosticBase):
     """ReturnBusCommunicationErrorCountResponse."""
 
     sub_function_code = 0x000C
+    response = True
 
 
 class ReturnBusExceptionErrorCountRequest(DiagnosticBase):
@@ -225,6 +240,7 @@ class ReturnBusExceptionErrorCountResponse(DiagnosticBase):
     """ReturnBusExceptionErrorCountResponse."""
 
     sub_function_code = 0x000D
+    response = True
 
 
 class ReturnSlaveMessageCountRequest(DiagnosticBase):
@@ -242,6 +258,7 @@ class ReturnSlaveMessageCountResponse(DiagnosticBase):
     """ReturnSlaveMessageCountResponse."""
 
     sub_function_code = 0x000E
+    response = True
 
 
 class ReturnSlaveNoResponseCountRequest(DiagnosticBase):
@@ -259,6 +276,7 @@ class ReturnSlaveNoResponseCountResponse(DiagnosticBase):
     """ReturnSlaveNoResponseCountResponse."""
 
     sub_function_code = 0x000F
+    response = True
 
 
 class ReturnSlaveNAKCountRequest(DiagnosticBase):
@@ -276,6 +294,7 @@ class ReturnSlaveNAKCountResponse(DiagnosticBase):
     """ReturnSlaveNAKCountResponse."""
 
     sub_function_code = 0x0010
+    response = True
 
 
 class ReturnSlaveBusyCountRequest(DiagnosticBase):
@@ -293,6 +312,7 @@ class ReturnSlaveBusyCountResponse(DiagnosticBase):
     """ReturnSlaveBusyCountResponse."""
 
     sub_function_code = 0x0011
+    response = True
 
 
 class ReturnSlaveBusCharacterOverrunCountRequest(DiagnosticBase):
@@ -310,6 +330,7 @@ class ReturnSlaveBusCharacterOverrunCountResponse(DiagnosticBase):
     """ReturnSlaveBusCharacterOverrunCountResponse."""
 
     sub_function_code = 0x0012
+    response = True
 
 
 class ReturnIopOverrunCountRequest(DiagnosticBase):
@@ -327,6 +348,7 @@ class ReturnIopOverrunCountResponse(DiagnosticBase):
     """ReturnIopOverrunCountResponse."""
 
     sub_function_code = 0x0013
+    response = True
 
 
 class ClearOverrunCountRequest(DiagnosticBase):
@@ -344,6 +366,7 @@ class ClearOverrunCountResponse(DiagnosticBase):
     """ClearOverrunCountResponse."""
 
     sub_function_code = 0x0014
+    response = True
 
 
 class GetClearModbusPlusRequest(DiagnosticBase):
@@ -381,3 +404,4 @@ class GetClearModbusPlusResponse(DiagnosticBase):
     """GetClearModbusPlusResponse."""
 
     sub_function_code = 0x0015
+    response = True

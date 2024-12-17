@@ -214,7 +214,8 @@ class ModbusSimulatorServer:
         self.refresh_rate = 0
         self.register_filter: list[int] = []
         self.call_list: list[CallTracer] = []
-        self.request_lookup = DecodePDU(True).lookup
+        # Servers can see requests, but also replies (in multi-drop); http_server ignores replies
+        self.request_lookup = { fc:req for fc,(req,_rpy) in DecodePDU(True).lookup.items() }
         self.call_monitor = CallTypeMonitor()
         self.call_response = CallTypeResponse()
         app_key = getattr(web, 'AppKey', str)  # fall back to str for aiohttp < 3.9.0

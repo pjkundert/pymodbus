@@ -107,8 +107,13 @@ class FramerRTU(FramerBase):
             dev_id = int(data[used_len])
             if not (pdu_class := self.decoder.lookupPduClass(data[used_len:])):
                 continue
+            Log.debug("Frame {:32} of ??? bytes possible at offset {:3}",
+                      pdu_class.__name__, used_len)
             if not (size := pdu_class.calculateRtuFrameSize(data[used_len:])):
                 size = data_len +1
+            else:
+                Log.debug("Frame {:32} of {:3} bytes possible at offset {:3}",
+                          pdu_class.__name__, size, used_len)
             if data_len < used_len +size:
                 Log.debug("Frame - not ready")
                 return 0, dev_id, 0, self.EMPTY

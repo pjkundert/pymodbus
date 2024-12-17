@@ -52,6 +52,7 @@ class ReadCoilsResponse(ModbusPDU):
     """ReadCoilsResponse."""
 
     function_code = 1
+    response = True
     rtu_byte_count_pos = 2
 
     def encode(self) -> bytes:
@@ -68,12 +69,14 @@ class ReadDiscreteInputsResponse(ReadCoilsResponse):
     """ReadDiscreteInputsResponse."""
 
     function_code = 2
+    response = True
 
 
 class WriteSingleCoilResponse(ModbusPDU):
     """WriteSingleCoilResponse."""
 
     function_code = 5
+    response = True
     rtu_frame_size = 8
 
     def encode(self) -> bytes:
@@ -90,6 +93,8 @@ class WriteSingleCoilResponse(ModbusPDU):
 
 class WriteSingleCoilRequest(WriteSingleCoilResponse):
     """WriteSingleCoilRequest."""
+
+    response = False
 
     async def update_datastore(self, context: ModbusSlaveContext) -> ModbusPDU:
         """Run a request against a datastore."""
@@ -149,6 +154,7 @@ class WriteMultipleCoilsResponse(ModbusPDU):
     """WriteMultipleCoilsResponse."""
 
     function_code = 15
+    response = True
     rtu_frame_size = 8
 
     def encode(self) -> bytes:

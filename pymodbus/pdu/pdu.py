@@ -13,6 +13,7 @@ class ModbusPDU:
     """Base class for all Modbus messages."""
 
     function_code: int = 0
+    response: bool = False
     sub_function_code: int = -1
     rtu_frame_size: int = 0
     rtu_byte_count_pos: int = 0
@@ -97,6 +98,7 @@ class ExceptionResponse(ModbusPDU):
     """Base class for a modbus exception PDU."""
 
     rtu_frame_size = 5
+    response = True
 
     ILLEGAL_FUNCTION = 0x01
     ILLEGAL_ADDRESS = 0x02

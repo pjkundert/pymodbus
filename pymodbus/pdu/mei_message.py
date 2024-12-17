@@ -67,6 +67,7 @@ class ReadDeviceInformationResponse(ModbusPDU):
 
     function_code = 0x2B
     sub_function_code = 0x0E
+    response = True
 
     @classmethod
     def calculateRtuFrameSize(cls, buffer: bytes) -> int:

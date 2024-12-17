@@ -160,8 +160,10 @@ class ModbusServerRequestHandler(TransactionManager):
                 # if broadcasting then execute on all slave contexts,
                 # note response will be ignored
                 for dev_id in self.server.context.slaves():
+                    Log.debug( "Updating device {} datastore: {} (broadcast)", dev_id, request )
                     response = await request.update_datastore(self.server.context[dev_id])
             else:
+                Log.debug( "Updating device {} datastore: {}", request.dev_id, request )
                 context = self.server.context[request.dev_id]
                 response = await request.update_datastore(context)
 

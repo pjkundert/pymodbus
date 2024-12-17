@@ -9,8 +9,8 @@ from pymodbus.pdu.decoders import DecodePDU
 class TestModbusPDU:
     """Test ModbusPDU."""
 
-    client = DecodePDU(False)
-    server = DecodePDU(True)
+    client = DecodePDU(False)  # Clients can parse only responses
+    server = DecodePDU(True)   # Servers can parse both requests and responses (ie. on multi-drop links)
     requests = (
         (0x01, b"\x01\x00\x01\x00\x01"),  # read coils
         (0x02, b"\x02\x00\x01\x00\x01"),  # read discrete inputs
@@ -110,13 +110,13 @@ class TestModbusPDU:
 
     @pytest.mark.parametrize(("code", "frame"), list(responses) + list(exceptions))
     def test_client_decode(self, code, frame):
-        """Test lookup for responses."""
+        """Test decoding for client requests, responses and exceptions."""
         pdu = self.client.decode(frame)
         assert pdu.function_code == code
 
-    @pytest.mark.parametrize(("code", "frame"), list(requests))
+    @pytest.mark.parametrize(("code", "frame"), list(requests) + list(responses) + list(exceptions))
     def test_server_decode(self, code, frame):
-        """Test lookup for requests."""
+        """Test decoding for server responses."""
         pdu = self.server.decode(frame)
         assert pdu.function_code == code
 
@@ -124,11 +124,13 @@ class TestModbusPDU:
     @pytest.mark.parametrize(("decoder"), [server, client])
     def test_decode_bad_frame(self, decoder, frame):
         """Test lookup bad frames."""
-        assert not decoder.decode(frame)
+        assert decoder.decode(frame) is None
 
     def test_decode_unknown_sub(self):
-        """Test for unknown sub code."""
-        assert self.client.decode(b"\x08\x00\xF0\xF0\x00")
+        """Test for unknown sub code; should return None decoded; formerly, this would
+        return a decoded PDU, because the sub-code was ignoring the first byte, and only
+        decoding the second!"""
+        assert self.client.decode(b"\x08\x00\xF0\xF0\x00") is None
 
     @pytest.mark.parametrize(("decoder"), [server, client])
     def test_register_custom_request(self, decoder):

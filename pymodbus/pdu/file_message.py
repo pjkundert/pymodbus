@@ -85,6 +85,7 @@ class ReadFileRecordResponse(ModbusPDU):
     """ReadFileRecordResponse."""
 
     function_code = 0x14
+    response = True
     rtu_byte_count_pos = 2
 
     def __init__(self, records: list[FileRecord] | None = None, dev_id: int = 1, transaction_id: int = 0) -> None:
@@ -178,6 +179,7 @@ class WriteFileRecordResponse(ModbusPDU):
     """The normal response is an echo of the request."""
 
     function_code = 0x15
+    response = True
     rtu_byte_count_pos = 2
 
     def __init__(self, records: list[FileRecord] | None = None, dev_id: int = 1, transaction_id: int = 0) -> None:
@@ -247,6 +249,7 @@ class ReadFifoQueueResponse(ModbusPDU):
     """ReadFifoQueueResponse."""
 
     function_code = 0x18
+    response = True
 
     @classmethod
     def calculateRtuFrameSize(cls, buffer: bytes) -> int:
